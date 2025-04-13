@@ -11,7 +11,7 @@ function App() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/hike" element={<HikeTracker />} />
+            <Route path="/hike-tracker" element={<HikeTracker />} />
             <Route path="/previous-hikes" element={<PreviousHikes />} />
             <Route path="/view-hike/:id" element={<ViewHike />} />
         </Routes>

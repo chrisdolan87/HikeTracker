@@ -5,7 +5,7 @@ function Home() {
     const navigate = useNavigate();
 
     const startHike = () => {
-        navigate("/hike");
+        navigate("/hike-tracker");
     };
 
     const prevHikes = () => {

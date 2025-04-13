@@ -63,11 +63,18 @@ function HikeTracker() {
     const webcamRef = useRef(null);
 
     useEffect(() => {
+        const storedCoords = localStorage.getItem("lastCoords");
+        if (storedCoords) {
+            setCoords(JSON.parse(storedCoords));
+        }
+    
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude, longitude } = pos.coords;
-                setCoords({ latitude, longitude });
+                const newCoords = { latitude, longitude };
+                setCoords(newCoords);
                 setRoute((prev) => [...prev, [latitude, longitude]]);
+                localStorage.setItem("lastCoords", JSON.stringify(newCoords));
             },
             (err) => {
                 console.error("Failed to get location:", err);
@@ -98,7 +105,7 @@ function HikeTracker() {
 
         getAndSaveLocation(); // Run once immediately to get starting location
         // The run every x interval to track route
-        intervalRef.current = setInterval(getAndSaveLocation, 15000); // 1000ms == 1s
+        intervalRef.current = setInterval(getAndSaveLocation, 120000); // 1000ms == 1s
     };
 
     const stopTracking = async () => {

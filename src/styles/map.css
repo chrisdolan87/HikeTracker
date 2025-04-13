@@ -1,0 +1,101 @@
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.hike-tracker {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    position: relative;
+}
+
+.map-container {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.hike-summary {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.camera-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 100;
+}
+
+.button-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    z-index: 100;
+    background-color: #122835;
+}
+
+.camera-buttons {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    z-index: 100;
+}
+
+.button {
+    height: 40px;
+    width: 200px;
+    border-radius: 9999px;
+    box-shadow: 0px 1px 5px #122835bb;
+    margin-bottom: 1rem;
+    font-size: medium;
+}
+
+.camera-button {
+    height: 50px;
+    width: 50px;
+    border-radius: 9999px;
+    box-shadow: 0px 1px 5px #122835bb;
+    font-size: medium;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.camera-capture {
+    height: 60px;
+    width: 60px;
+}
+
+.heading {
+    margin: 0;
+    padding: 10px;
+    background-color: #122835;
+}
+
+.summary-heading {
+    font-size: x-large;
+    margin: 1rem;
+}
+
+.summary-text {
+    font-size: larger;
+    margin: 0.5rem;
+}

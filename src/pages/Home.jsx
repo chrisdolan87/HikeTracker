@@ -9,18 +9,18 @@ function Home() {
     };
 
     const prevHikes = () => {
-        navigate("/prevHikes");
+        navigate("/previous-hikes");
     };
 
     return (
         <div className="home">
-            <h1>Welcome to the Hike Tracker App</h1>
-            <div className="home-buttons">
-                <button onClick={startHike} className="button">
+            <h1 className="home-heading">Welcome to the Hike Tracker App</h1>
+            <div className="home-button-container">
+                <button onClick={startHike} className="button button-top">
                     New Hike
                 </button>
-                <button onClick={prevHikes} className="button">
-                    Previous Hikes
+                <button onClick={prevHikes} className="button button-bottom">
+                    View Previous Hikes
                 </button>
             </div>
         </div>

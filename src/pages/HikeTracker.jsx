@@ -39,7 +39,10 @@ const MapUpdater = ({ coords }) => {
     const map = useMap();
     useEffect(() => {
         if (coords) {
-            map.setView([coords.latitude, coords.longitude], 15);
+            map.flyTo([coords.latitude, coords.longitude], 15, {
+                animate: true,
+                duration: 1.5,
+            });
         }
     }, [coords]);
     return null;
@@ -53,6 +56,7 @@ function HikeTracker() {
     const [tracking, setTracking] = useState(false);
     const [hikeSummary, setHikeSummary] = useState(null);
     const [hikeId, setHikeId] = useState(null);
+    const hikeIdRef = useRef(null); // Need to use useRef to get the id immediately to add it to locations
     const intervalRef = useRef(null);
     const [showCamera, setShowCamera] = useState(false);
     const [cameraFacing, setCameraFacing] = useState("environment");
@@ -73,7 +77,9 @@ function HikeTracker() {
 
     const startTracking = async () => {
         setHikeSummary(null);
-        setHikeId(await createNewHike());
+        const newHikeId = await createNewHike(); // Get hike id from createNewHike method
+        setHikeId(newHikeId);
+        hikeIdRef.current = newHikeId; // Need to use useRef to get the id immediately to add it to locations
         setTracking(true);
 
         const getAndSaveLocation = () => {
@@ -82,7 +88,7 @@ function HikeTracker() {
                 const timestamp = new Date().toISOString();
                 setCoords({ latitude, longitude });
                 setRoute((prev) => [...prev, [latitude, longitude]]);
-                await saveLocationData(hikeId, {
+                await saveLocationData(hikeIdRef.current, {
                     latitude,
                     longitude,
                     timestamp,
@@ -90,17 +96,22 @@ function HikeTracker() {
             });
         };
 
-        getAndSaveLocation(); // get first location immediately
-        intervalRef.current = setInterval(getAndSaveLocation, 10000); // every 2 mins
+        getAndSaveLocation(); // Run once immediately to get starting location
+        // The run every x interval to track route
+        intervalRef.current = setInterval(getAndSaveLocation, 15000); // 1000ms == 1s
     };
 
     const stopTracking = async () => {
         clearInterval(intervalRef.current);
-        if (hikeId) {
-            await endHike(hikeId);
+        if (hikeIdRef.current) {
+            await endHike(hikeIdRef.current); // endHike calculates duration and distance
+
             const allHikes = await getAllHikes();
-            const thisHike = allHikes.find((h) => h.id === hikeId);
+            const thisHike = allHikes.find((h) => h.id === hikeIdRef.current);
             setHikeSummary(thisHike);
+
+            // When the hike is over, clear the hike id
+            hikeIdRef.current = null;
             setHikeId(null);
         }
         setTracking(false);
@@ -113,16 +124,16 @@ function HikeTracker() {
     const capturePhoto = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
 
-        if (coords && hikeId) {
+        if (coords && hikeIdRef.current) {
             await savePhoto({
-                hikeId: hikeId,
+                hikeId: hikeIdRef.current,
                 latitude: coords.latitude,
                 longitude: coords.longitude,
                 imageData: imageSrc,
             });
         }
 
-        setShowCamera(false); // hide camera after taking photo
+        setShowCamera(false); // Hide camera after taking photo
     };
 
     const switchCamera = async () => {
@@ -145,8 +156,6 @@ function HikeTracker() {
 
     return (
         <>
-            <h2 className="heading">Hike Tracker</h2>
-
             {hikeSummary && (
                 <div className="hike-summary">
                     <h3 className="summary-heading">Hike Summary</h3>
@@ -157,6 +166,10 @@ function HikeTracker() {
                         <strong>Distance:</strong>{" "}
                         {(hikeSummary.distance / 1000).toFixed(2)} km
                     </p>
+                    <button onClick={back} className="button summary-button">
+                        Finish Hike
+                    </button>
+                    {/* <p>Points collected: {locations.length}</p> */}
                 </div>
             )}
 
@@ -168,6 +181,9 @@ function HikeTracker() {
                             zoom={15}
                         >
                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                            {/* Map follows user location */}
+                            <MapUpdater coords={coords} />
 
                             {route.map(([lat, lng], i) => (
                                 <Marker
@@ -206,7 +222,7 @@ function HikeTracker() {
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
                             videoConstraints={{
-                                facingMode: "user",
+                                facingMode: { cameraFacing },
                             }}
                             style={{
                                 width: "100%",
@@ -227,13 +243,13 @@ function HikeTracker() {
                             <>
                                 <button
                                     onClick={() => setShowCamera(true)}
-                                    className="button"
+                                    className="button button-top"
                                 >
                                     Take Photo
                                 </button>
                                 <button
                                     onClick={stopTracking}
-                                    className="button"
+                                    className="button button-bottom"
                                 >
                                     Stop Hike
                                 </button>
@@ -269,19 +285,18 @@ function HikeTracker() {
 
                 {!tracking && (
                     <>
-                        {hikeSummary ? (
-                            <button onClick={back} className="button">
-                                Finish Hike
-                            </button>
-                        ) : (
+                        {!hikeSummary && (
                             <>
                                 <button
                                     onClick={startTracking}
-                                    className="button"
+                                    className="button button-top"
                                 >
                                     Start Hike
                                 </button>
-                                <button onClick={back} className="button">
+                                <button
+                                    onClick={back}
+                                    className="button button-bottom"
+                                >
                                     Back
                                 </button>
                             </>

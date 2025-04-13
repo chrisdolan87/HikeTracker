@@ -5,6 +5,7 @@ body {
         "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
     display: flex;
     justify-content: center;
     text-align: center;
@@ -12,25 +13,71 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     background-color: #00111bcb;
     background-blend-mode: darken;
     color: antiquewhite;
     min-height: 100vh;
+    width: 100vw;
 }
 
 #root {
-    width: 100vw;
-    height: 100vh;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .home {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
     flex-grow: 1;
+}
+
+.home-heading {
+    padding: 1rem 0;
+}
+
+.home-button-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.hikes-list {
+    padding: 1rem 2rem;
+    list-style: none;
+}
+.hike-card {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid white;
+}
+.hike-card p {
+    margin: 0.5rem;
+}
+
+.view-hike-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.view-hike-map-container {
+    width: 100%;
+    height: fit-content;
+}
+
+.view-hike-summary {
+    width: 100%;
+    
 }
 
 .App {

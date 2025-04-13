@@ -54,7 +54,7 @@ export const endHike = async (id) => {
 };
 
 export const saveLocationData = async (hikeId, data) => {
-    await db.locations.add({ ...data, hikeId });
+    await db.locations.add({  hikeId, ...data });
 };
 
 export const getAllHikes = async () => {

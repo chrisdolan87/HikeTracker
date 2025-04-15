@@ -19,6 +19,16 @@ export const createNewHike = async () => {
     return id;
 };
 
+export const deleteHike = async (hikeId) => {
+    // Use db.transaction to ensure either evrything is deleted or it rolls back to prevent partial deletes
+    await db.transaction("rw", db.hikes, db.locations, db.photos, async () => {
+        await db.hikes.delete(hikeId);
+        await db.locations.where("hikeId").equals(hikeId).delete();
+        await db.photos.where("hikeId").equals(hikeId).delete();
+    });
+};
+
+
 export const endHike = async (id) => {
     const locations = await getLocationsForHike(id);
     const hike = await db.hikes.get(id);

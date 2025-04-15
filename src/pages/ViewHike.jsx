@@ -4,6 +4,7 @@ import {
     getLocationsForHike,
     getPhotosForHike,
     getAllHikes,
+    deleteHike,
 } from "../utils/db";
 import {
     MapContainer,
@@ -34,6 +35,7 @@ function ViewHike() {
     const [route, setRoute] = useState([]);
     const [photos, setPhotos] = useState([]);
     const [summary, setSummary] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -41,6 +43,11 @@ function ViewHike() {
             const hikePhotos = await getPhotosForHike(Number(id));
             const allHikes = await getAllHikes();
             const hikeData = allHikes.find((h) => h.id === Number(id));
+
+            console.log("Hike ID from route:", id);
+            console.log("Fetched locations:", locations);
+            console.log("Fetched photos:", hikePhotos);
+            console.log("Fetched hike summary:", hikeData);
 
             setRoute(locations.map((loc) => [loc.latitude, loc.longitude]));
             setPhotos(hikePhotos);
@@ -50,6 +57,12 @@ function ViewHike() {
     }, [id]);
 
     const back = () => navigate("/previous-hikes");
+
+    const handleDelete = async () => {
+        setConfirmDelete(false);
+        await deleteHike(Number(id));
+        navigate("/previous-hikes");
+    };
 
     return (
         <>
@@ -83,9 +96,9 @@ function ViewHike() {
                                 >
                                     <Popup>
                                         <img
+                                            className="photo"
                                             src={photo.imageData}
                                             alt={`Photo taken at ${photo.timestamp}`}
-                                            width="300"
                                         />
                                     </Popup>
                                 </Marker>
@@ -111,9 +124,28 @@ function ViewHike() {
                     </div>
                 )}
 
-                <button onClick={back} className="button button-bottom">
+                <button onClick={back} className="button button-top">
                     Back
                 </button>
+
+                <button
+                    onClick={() => setConfirmDelete(true)}
+                    className="button button-bottom button-delete"
+                >
+                    Delete Hike
+                </button>
+
+                {confirmDelete && (
+                    <div className="confirm-overlay">
+                        <div className="confirm-box">
+                            <p>Are you sure you want to delete this hike?</p>
+                            <button onClick={handleDelete} className="confirm-delete-button button-delete">Yes</button>
+                            <button onClick={() => setConfirmDelete(false)} className="confirm-delete-button">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );

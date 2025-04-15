@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import Map from "../components/Map";
+import Camera from "../components/Camera";
 import {
     createNewHike,
     endHike,
@@ -8,51 +10,14 @@ import {
     savePhoto,
     getPhotosForHike,
 } from "../utils/db";
-import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    Polyline,
-    useMap,
-    Popup,
-} from "react-leaflet";
-import L from "leaflet";
 import "../styles/map.css";
-import Webcam from "react-webcam";
 import { useNavigate } from "react-router-dom";
-
-
-// Icon for marker
-const marker = L.icon({
-    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    iconSize: [20, 32],
-    iconAnchor: [10, 32],
-});
-
-const photoMarker = L.icon({
-    iconUrl: "/camera_icon.png",
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-});
-
-const MapUpdater = ({ coords }) => {
-    const map = useMap();
-    useEffect(() => {
-        if (coords) {
-            map.flyTo([coords.latitude, coords.longitude], 16, {
-                animate: true,
-                duration: 1.5,
-            });
-        }
-    }, [coords]);
-    return null;
-};
+import { getDistance } from "geolib";
 
 function HikeTracker() {
+    const navigate = useNavigate();
     const [coords, setCoords] = useState(null);
     const [route, setRoute] = useState([]);
-    const navigate = useNavigate();
     const [photos, setPhotos] = useState([]);
     const [tracking, setTracking] = useState(false);
     const [hikeSummary, setHikeSummary] = useState(null);
@@ -60,10 +25,8 @@ function HikeTracker() {
     const hikeIdRef = useRef(null); // Need to use useRef to get the id immediately to add it to locations
     const intervalRef = useRef(null);
     const [showCamera, setShowCamera] = useState(false);
-    const [cameraFacing, setCameraFacing] = useState("environment");
-    const webcamRef = useRef(null);
 
-    useEffect(() => {    
+    useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude, longitude } = pos.coords;
@@ -77,6 +40,60 @@ function HikeTracker() {
         );
     }, []);
 
+    useEffect(() => {
+        if (!tracking) return;
+
+        let lastCoords = null;
+
+        const watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+
+                if (!lastCoords) {
+                    lastCoords = { latitude, longitude };
+                    setCoords({ latitude, longitude });
+                    const timestamp = new Date().toISOString();
+                    setRoute((prev) => [...prev, [latitude, longitude]]);
+                    // Save point to route and Dexie
+                    saveLocationData(hikeIdRef.current, {
+                        latitude,
+                        longitude,
+                        timestamp,
+                    });
+                } else {
+                    const distance = getDistance(lastCoords, {
+                        latitude,
+                        longitude,
+                    });
+
+                    if (distance >= 10) {
+                        lastCoords = { latitude, longitude };
+                        setCoords({ latitude, longitude });
+                        const timestamp = new Date().toISOString();
+                        setRoute((prev) => [...prev, [latitude, longitude]]);
+                        saveLocationData(hikeIdRef.current, {
+                            latitude,
+                            longitude,
+                            timestamp,
+                        });
+                    }
+                }
+            },
+            (error) => {
+                console.error("Error watching position:", error);
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000,
+            }
+        );
+
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, [tracking]);
+
     const startTracking = async () => {
         setHikeSummary(null);
         const newHikeId = await createNewHike(); // Get hike id from createNewHike method
@@ -84,27 +101,26 @@ function HikeTracker() {
         hikeIdRef.current = newHikeId; // Need to use useRef to get the id immediately to add it to locations
         setTracking(true);
 
-        const getAndSaveLocation = () => {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const { latitude, longitude } = pos.coords;
-                const timestamp = new Date().toISOString();
-                setCoords({ latitude, longitude });
-                setRoute((prev) => [...prev, [latitude, longitude]]);
-                await saveLocationData(hikeIdRef.current, {
-                    latitude,
-                    longitude,
-                    timestamp,
-                });
-            });
-        };
+        // const getAndSaveLocation = () => {
+        //     navigator.geolocation.getCurrentPosition(async (pos) => {
+        //         const { latitude, longitude } = pos.coords;
+        //         const timestamp = new Date().toISOString();
+        //         setCoords({ latitude, longitude });
+        //         setRoute((prev) => [...prev, [latitude, longitude]]);
+        //         await saveLocationData(hikeIdRef.current, {
+        //             latitude,
+        //             longitude,
+        //             timestamp,
+        //         });
+        //     });
+        // };
 
-        getAndSaveLocation(); // Run once immediately to get starting location
-        // The run every x interval to track route
-        intervalRef.current = setInterval(getAndSaveLocation, 30000); // 1000ms == 1s
+        // getAndSaveLocation(); // Run once immediately to get starting location
+        // // The run every x interval to track route
+        // intervalRef.current = setInterval(getAndSaveLocation, 30000); // 1000ms == 1s
     };
 
     const stopTracking = async () => {
-        clearInterval(intervalRef.current);
         if (hikeIdRef.current) {
             await endHike(hikeIdRef.current); // endHike is in db file and calculates duration and distance
 
@@ -124,35 +140,13 @@ function HikeTracker() {
         navigate("/");
     };
 
-    const capturePhoto = async () => {
-        const imageSrc = webcamRef.current.getScreenshot();
-
-        if (coords && hikeIdRef.current) {
-            await savePhoto({
-                hikeId: hikeIdRef.current,
-                latitude: coords.latitude,
-                longitude: coords.longitude,
-                imageData: imageSrc,
-            });
-        }
-
-        setShowCamera(false); // Hide camera after taking photo
-    };
-
-    const switchCamera = async () => {
-        if (cameraFacing == "environment") {
-            setCameraFacing("user");
-        } else setCameraFacing("environment");
-    };
-
     const loadPhotosForHike = async () => {
         if (hikeId) {
-            const photosForHike = await getPhotosForHike(hikeId); // Fetch photos from DB
-            setPhotos(photosForHike);
+            setPhotos(await getPhotosForHike(hikeId));
         }
     };
 
-    // Call loadPhotosForHike when the hike starts
+    // Call loadPhotosForHike whenever the coords change
     useEffect(() => {
         loadPhotosForHike();
     }, [coords]);
@@ -172,77 +166,35 @@ function HikeTracker() {
                     <button onClick={back} className="button summary-button">
                         Finish Hike
                     </button>
-                    {/* <p>Points collected: {locations.length}</p> */}
                 </div>
             )}
 
             <div className="hike-tracker">
-                <div className="map-container">
-                    {coords && (
-                        <MapContainer
-                            center={[coords.latitude, coords.longitude]}
-                            zoom={16}
-                        >
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                {coords && (
+                    <Map coords={coords} route={route} photos={photos} />
+                )}
 
-                            {/* Map follows user location */}
-                            <MapUpdater coords={coords} />
-
-                            {route.map(([lat, lng], i) => (
-                                <Marker
-                                    key={i}
-                                    position={[lat, lng]}
-                                    icon={marker}
-                                />
-                            ))}
-
-                            {photos.map((photo, index) => (
-                                <Marker
-                                    key={index}
-                                    position={[photo.latitude, photo.longitude]}
-                                    icon={photoMarker}
-                                    zIndexOffset={1000}
-                                >
-                                    <Popup>
-                                        <img
-                                            src={photo.imageData}
-                                            alt={`Photo taken at ${photo.timestamp}`}
-                                            width="300"
-                                        />
-                                    </Popup>
-                                </Marker>
-                            ))}
-
-                            <Polyline positions={route} color="blue" />
-                        </MapContainer>
-                    )}
-                </div>
-
-                {showCamera ? (
-                    <div className="camera-container">
-                        <Webcam
-                            audio={false}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={{
-                                facingMode: "user",
-                            }}
-                            style={{
-                                width: "100%",
-                                objectFit: "cover",
-                                flexGrow: "1",
-                            }}
-                        />
-                    </div>
-                ) : (
-                    <></>
+                {showCamera && (
+                    <Camera
+                        onCapture={async (imageSrc) => {
+                            if (coords && hikeIdRef.current) {
+                                await savePhoto({
+                                    hikeId: hikeIdRef.current,
+                                    latitude: coords.latitude,
+                                    longitude: coords.longitude,
+                                    imageData: imageSrc,
+                                });
+                            }
+                        }}
+                        onClose={() => setShowCamera(false)}
+                    />
                 )}
             </div>
 
             <div className="button-container">
                 {tracking && (
                     <>
-                        {!showCamera ? (
+                        {!showCamera && (
                             <>
                                 <button
                                     onClick={() => setShowCamera(true)}
@@ -256,31 +208,6 @@ function HikeTracker() {
                                 >
                                     Stop Hike
                                 </button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="camera-buttons">
-                                    <button
-                                        onClick={() => setShowCamera(false)}
-                                        className="camera-button camera-back"
-                                        style={{
-                                            backgroundImage:
-                                                "url(/back_arrow.png)",
-                                        }}
-                                    ></button>
-                                    <button
-                                        onClick={capturePhoto}
-                                        className="camera-button camera-capture"
-                                    ></button>
-                                    <button
-                                        onClick={switchCamera}
-                                        className="camera-button camera-switch"
-                                        style={{
-                                            backgroundImage:
-                                                "url(/camera_switch.png)",
-                                        }}
-                                    ></button>
-                                </div>
                             </>
                         )}
                     </>

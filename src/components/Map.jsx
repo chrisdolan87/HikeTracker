@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
     MapContainer,
     TileLayer,
@@ -10,7 +10,7 @@ import {
 import L from "leaflet";
 
 // Location marker
-const defaultMarker = L.icon({
+const routeMarker = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -27,7 +27,7 @@ const photoMarker = L.icon({
 // Function called to move the map as the coords change
 const MapUpdater = ({ coords }) => {
     const map = useMap();
-    React.useEffect(() => {
+    useEffect(() => {
         if (coords) {
             map.flyTo([coords.latitude, coords.longitude], 15, {
                 animate: true,
@@ -39,6 +39,33 @@ const MapUpdater = ({ coords }) => {
 };
 
 const Map = ({ coords, route, photos }) => {
+    const [heading, setHeading] = useState(null);
+
+    // useEffect to change compass direction
+    useEffect(() => {
+        const handleOrientation = (event) => {
+            const alpha = event.alpha;
+            if (alpha !== null) {
+                setHeading(-28.5 + alpha); // -28.5deg puts the arrow at north
+            }
+        };
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener(
+                "deviceorientationabsolute",
+                handleOrientation,
+                true
+            );
+
+            return () => {
+                window.removeEventListener(
+                    "deviceorientationabsolute",
+                    handleOrientation
+                );
+            };
+        }
+    }, []);
+
     return (
         <MapContainer
             className="map-container"
@@ -49,10 +76,26 @@ const Map = ({ coords, route, photos }) => {
 
             <MapUpdater coords={coords} />
 
-            {/* For each location on this route, add a location marker */}
-            {route.map(([lat, lng], i) => (
-                <Marker key={i} position={[lat, lng]} icon={defaultMarker} />
-            ))}
+            {/* For each location on this route, add a marker */}
+            {/* {route.map(([lat, lng], i) => (
+                <Marker key={i} position={[lat, lng]} icon={routeMarker} />
+            ))} */}
+
+            {/* Add a marker at the start and end of the route */}
+            {route.length > 0 && (
+                <>
+                    {/* Start marker */}
+                    <Marker position={route[0]} icon={routeMarker}></Marker>
+
+                    {/* End marker */}
+                    {route.length > 1 && (
+                        <Marker
+                            position={route[route.length - 1]}
+                            icon={routeMarker}
+                        ></Marker>
+                    )}
+                </>
+            )}
 
             {/* For each photo on this route, add a photo marker to the map */}
             {photos.map((photo, index) => (
@@ -64,7 +107,8 @@ const Map = ({ coords, route, photos }) => {
                 >
                     {/* When user clicks on the photo marker, the photo is shown in a popup */}
                     <Popup>
-                        <img className="photo"
+                        <img
+                            className="photo"
                             src={photo.imageData}
                             alt={`Photo taken at ${photo.timestamp}`}
                         />
@@ -74,6 +118,17 @@ const Map = ({ coords, route, photos }) => {
 
             {/* Line that follows the route */}
             <Polyline positions={route} color="blue" />
+
+            {heading !== null && (
+                <div className="compass-overlay">
+                    <img
+                        className="arrow"
+                        src="/arrow.png"
+                        alt="Arrow"
+                        style={{ transform: `rotate(${heading}deg)` }}
+                    />
+                </div>
+            )}
         </MapContainer>
     );
 };

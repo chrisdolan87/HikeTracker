@@ -19,11 +19,11 @@ function HikeTracker() {
     const [coords, setCoords] = useState(null);
     const [route, setRoute] = useState([]);
     const [photos, setPhotos] = useState([]);
+    const [newPhoto, setNewPhoto] = useState(false);
     const [tracking, setTracking] = useState(false);
     const [hikeSummary, setHikeSummary] = useState(null);
     const [hikeId, setHikeId] = useState(null);
     const hikeIdRef = useRef(null); // Need to use useRef to get the id immediately to add it to locations
-    const intervalRef = useRef(null);
     const [showCamera, setShowCamera] = useState(false);
 
     useEffect(() => {
@@ -146,10 +146,11 @@ function HikeTracker() {
         }
     };
 
-    // Call loadPhotosForHike whenever the coords change
+    // Call loadPhotosForHike whenever the newPhoto is set to true
     useEffect(() => {
         loadPhotosForHike();
-    }, [coords]);
+        setNewPhoto(false);
+    }, [newPhoto]);
 
     return (
         <>
@@ -184,6 +185,8 @@ function HikeTracker() {
                                     longitude: coords.longitude,
                                     imageData: imageSrc,
                                 });
+                                // Set newPhoto to true to trigger useEffect to load photos
+                                setNewPhoto(true);
                             }
                         }}
                         onClose={() => setShowCamera(false)}

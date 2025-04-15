@@ -48,13 +48,23 @@ body {
     z-index: 100;
 }
 
+.prev-hikes {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .hikes-list {
-    padding: 1rem 2rem;
+    width: 100%;
+    max-width: 800px;
+    padding: 1rem 0;
     list-style: none;
 }
 .hike-card {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    margin: 0.5rem 2rem;
     border-bottom: 1px solid white;
 }
 .hike-card p {
@@ -72,12 +82,24 @@ body {
 
 .view-hike-map-container {
     width: 100%;
-    height: fit-content;
+    max-width: 1200px;
+    min-height: 200px;
+    flex-grow: 1;
 }
 
 .view-hike-summary {
     width: 100%;
+    height: fit-content;
     padding-top: 2rem;
+}
+
+.view-hike-button-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
 }
 
 .button-delete {

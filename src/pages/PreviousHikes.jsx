@@ -27,7 +27,7 @@ function PreviousHikes() {
     };
 
     return (
-        <div className="">
+        <div className="prev-hikes">
             <h2>Previous Hikes</h2>
 
             {hikes.length === 0 ? (

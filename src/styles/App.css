@@ -63,10 +63,16 @@ body {
     padding: 1rem 0;
     list-style: none;
 }
+
 .hike-card {
     margin: 0.5rem 2rem;
+}
+
+/* Add a dividing border between each hike item in list */
+.hike-card:not(:last-child) {
     border-bottom: 1px solid white;
 }
+
 .hike-card p {
     margin: 0.5rem;
 }

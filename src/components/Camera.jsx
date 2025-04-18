@@ -25,7 +25,7 @@ export default function Camera({ onCapture, onClose }) {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={{ facingMode: "cameraFacing" }}
+                videoConstraints={{ facingMode: cameraFacing }}
                 style={{
                     width: "100%",
                     objectFit: "cover",

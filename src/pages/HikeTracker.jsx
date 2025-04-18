@@ -174,8 +174,6 @@ function HikeTracker() {
                                     longitude: coords.longitude,
                                     imageData: imageSrc,
                                 });
-                                // Set newPhoto to true to trigger useEffect to load photos
-                                setNewPhoto(true);
                             }
                         }}
                         onClose={() => setShowCamera(false)}

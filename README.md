@@ -1,70 +1,103 @@
-# Getting Started with Create React App
+# Hike Tracker 🥾
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Hike Tracker** is a Progressive Web App (PWA) built with React that lets users record their hiking adventures. It uses device hardware features such as **GPS** (via the Geolocation API) and the **camera** (via the Camera API with `react-webcam`) to create an interactive hiking experience.
 
-## Available Scripts
+## 🌟 Features
 
-In the project directory, you can run:
+- ✅ Start and stop hikes
+- 🗺️ Track real-time location on a map
+- 📸 Take photos during hikes (pinned to map)
+- 📊 View hike summary with distance and duration
+- 📂 View and dekete previous hikes
+- 📱 Installable as a PWA
 
-### `npm start`
+## 🚀 Live App
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Access the live app here: [https://hike-tracker-omega.vercel.app](https://hike-tracker-omega.vercel.app)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+To install the PWA:
+- On desktop: Click the "Install App" button in the browser address bar.
+- On mobile: Open the browser menu and select **Add to Home Screen**.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🧰 Technologies Used
 
-### `npm run build`
+- **React** (Frontend)
+- **Dexie.js** (IndexedDB wrapper for local storage)
+- **Leaflet.js** (Map rendering)
+- **react-webcam** (Camera integration)
+- **Vite** (Development & build tooling)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📸 Permissions Required
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Location Access** – Used to track the user’s route on a map.
+- **Camera Access** – Used to capture photos during hikes.
 
-### `npm run eject`
+These permissions are only requested when required and are never stored beyond the device.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Getting Started Locally
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Clone the repository and run the app locally:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+git clone https://github.com/chrisdolan87/HikeTracker.git
+cd HikeTracker
+npm install
+npm run dev
+Then visit [http://localhost:5173](http://localhost:5173) in your browser.
+```
 
-## Learn More
+**Note:** This project uses **Vite**. If `npm run dev` doesn’t work, make sure Vite is properly installed.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📂 Folder Structure Overview
 
-### Code Splitting
+src/
+│
+├── components/        # React components (MapView, Camera, Summary, etc.)
+├── db/                # Dexie.js setup for IndexedDB
+├── pages/             # Page-level components (Home, Hike, PreviousHikes)
+├── utils/             # Utility functions (distance, time calculation)
+├── App.jsx            # Main app logic
+├── main.jsx           # App entry point
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 🧪 Known Issues
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Some devices block camera access in incognito/private browsing modes.
+- Location tracking depends on GPS accuracy and may be less reliable in areas with poor signal.
+- No current export function for hike data (planned for future).
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔮 Future Improvements
 
-### Advanced Configuration
+- Offline map caching for better hiking in remote areas
+- Export hikes to GPX/KML
+- Photo gallery with full-size image previews
+- Enhanced analytics for elevation and pace
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 📘 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+This project is open-source and available under the [MIT License](LICENSE).
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🙌 Credits
+
+Built by **Chris Dolan**.
+
+Icons and assets from:
+
+- [Leaflet](https://leafletjs.com/)
+- [Font Awesome](https://fontawesome.com/)
+- [Heroicons](https://heroicons.com/)

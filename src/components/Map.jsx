@@ -125,7 +125,7 @@ const Map = ({ coords, route, photos }) => {
                         className="arrow"
                         src="/arrow.png"
                         alt="Arrow"
-                        style={{ transform: `rotate(${heading}deg)` }}
+                        style={{ transform: `rotate(${heading}deg)`, transition: "transform 0.2s ease-out", }}
                     />
                 </div>
             )}

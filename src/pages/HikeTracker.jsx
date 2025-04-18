@@ -55,27 +55,16 @@ function HikeTracker() {
                     const timestamp = new Date().toISOString();
                     setRoute((prev) => [...prev, [latitude, longitude]]);
                     // Save point to route and Dexie
-                    saveLocationData(hikeIdRef.current, {
-                        latitude,
-                        longitude,
-                        timestamp,
-                    });
+                    saveLocationData(hikeIdRef.current, {latitude, longitude, timestamp,});
                 } else {
-                    const distance = getDistance(lastCoords, {
-                        latitude,
-                        longitude,
-                    });
+                    const distance = getDistance(lastCoords, {latitude, longitude,});
 
                     if (distance >= 10) {
                         lastCoords = { latitude, longitude };
                         setCoords({ latitude, longitude });
                         const timestamp = new Date().toISOString();
                         setRoute((prev) => [...prev, [latitude, longitude]]);
-                        saveLocationData(hikeIdRef.current, {
-                            latitude,
-                            longitude,
-                            timestamp,
-                        });
+                        saveLocationData(hikeIdRef.current, {latitude, longitude, timestamp,});
                     }
                 }
             },

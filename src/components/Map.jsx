@@ -46,7 +46,7 @@ const Map = ({ coords, route, photos }) => {
         const handleOrientation = (event) => {
             const alpha = event.alpha;
             if (alpha !== null) {
-                setHeading(-28.5 + alpha); // -28.5deg puts the arrow at north
+                setHeading(alpha);
             }
         };
 

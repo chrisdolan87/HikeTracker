@@ -21,6 +21,48 @@ To install the PWA:
 
 ---
 
+## 📖 How to Use
+
+Once the app is installed or opened in the browser:
+
+### 🚶 Start a Hike
+1. From the **Home** screen, tap **New Hike**.
+2. You may need to grant permission for the app to access your location.
+3. The map will load showing your current location.
+4. Tap **Start Hike** to start live location tracking.
+5. Route will be shown on the map as you move.
+
+### 📸 Take Photos
+1. Tap the **Take Photo** button at any point during your hike.
+2. You may need to grant permission for the app to access the camera.
+3. The camera display will load.
+4. Tap the center camera button to take a photo.
+5. The photo will be saved and pinned to the map in the location it was taken.
+
+### 🛑 End the Hike
+1. Tap **Stop Hike** when you're done.
+2. A summary screen will display the total duration and total distance of the hike.
+3. The hike is saved locally for future viewing.
+
+### 📂 View Previous Hikes
+1. Tap **View Previous Hikes** on the Home screen.
+2. Select any hike from the list to view its details.
+3. The hike details screen will load showing the map with the completed route and photo markers, and the hike summary data.
+4. Click on any photo marker to display the photo.
+
+### 🗑️ Delete a Hike
+1. Tap **View Previous Hikes** on the Home screen.
+2. Select any hike from the list to view its details.
+3. The hike details screen will load.
+3. Tap the **Delete Hike** button.
+4. Confirm the deletion when prompted to delete the hike.
+
+⚠️ Deleted hikes cannot be recovered. This action permanently removes the hike data and any associated photos from local storage.
+
+**Note:** Data is stored locally using IndexedDB and persists across sessions (even offline).
+
+---
+
 ## 🧰 Technologies Used
 
 - **React** (Frontend)

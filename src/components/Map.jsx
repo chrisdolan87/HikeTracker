@@ -76,11 +76,6 @@ const Map = ({ coords, route, photos }) => {
 
             <MapUpdater coords={coords} />
 
-            {/* For each location on this route, add a marker */}
-            {/* {route.map(([lat, lng], i) => (
-                <Marker key={i} position={[lat, lng]} icon={routeMarker} />
-            ))} */}
-
             {/* Add a marker at the start and end of the route */}
             {route.length > 0 && (
                 <>

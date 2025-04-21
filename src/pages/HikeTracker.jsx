@@ -26,6 +26,7 @@ function HikeTracker() {
     const hikeIdRef = useRef(null); // Need to use useRef to get the id immediately to add it to locations
     const [showCamera, setShowCamera] = useState(false);
 
+    // GEOLOCATION API
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -54,7 +55,6 @@ function HikeTracker() {
                     setCoords({ latitude, longitude });
                     const timestamp = new Date().toISOString();
                     setRoute((prev) => [...prev, [latitude, longitude]]);
-                    // Save point to route and Dexie
                     saveLocationData(hikeIdRef.current, {latitude, longitude, timestamp,});
                 } else {
                     const distance = getDistance(lastCoords, {latitude, longitude,});
@@ -89,24 +89,6 @@ function HikeTracker() {
         setHikeId(newHikeId);
         hikeIdRef.current = newHikeId; // Need to use useRef to get the id immediately to add it to locations
         setTracking(true);
-
-        // const getAndSaveLocation = () => {
-        //     navigator.geolocation.getCurrentPosition(async (pos) => {
-        //         const { latitude, longitude } = pos.coords;
-        //         const timestamp = new Date().toISOString();
-        //         setCoords({ latitude, longitude });
-        //         setRoute((prev) => [...prev, [latitude, longitude]]);
-        //         await saveLocationData(hikeIdRef.current, {
-        //             latitude,
-        //             longitude,
-        //             timestamp,
-        //         });
-        //     });
-        // };
-
-        // getAndSaveLocation(); // Run once immediately to get starting location
-        // // The run every x interval to track route
-        // intervalRef.current = setInterval(getAndSaveLocation, 30000); // 1000ms == 1s
     };
 
     const stopTracking = async () => {
@@ -174,6 +156,7 @@ function HikeTracker() {
                                     longitude: coords.longitude,
                                     imageData: imageSrc,
                                 });
+                                setNewPhoto(true); // Set newPhoto to true to trigger useEffect to load photos on route
                             }
                         }}
                         onClose={() => setShowCamera(false)}

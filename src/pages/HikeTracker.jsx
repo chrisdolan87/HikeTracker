@@ -10,9 +10,30 @@ import {
     savePhoto,
     getPhotosForHike,
 } from "../utils/db";
-import "../styles/map.css";
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Polyline,
+    Popup,
+} from "react-leaflet";
+import L from "leaflet";
+import "../styles/App.css";
 import { useNavigate } from "react-router-dom";
 import { getDistance } from "geolib";
+
+const routeMarker = L.icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+});
+
+const photoMarker = L.icon({
+    iconUrl: "/camera_icon.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+});
 
 function HikeTracker() {
     const navigate = useNavigate();
@@ -55,16 +76,27 @@ function HikeTracker() {
                     setCoords({ latitude, longitude });
                     const timestamp = new Date().toISOString();
                     setRoute((prev) => [...prev, [latitude, longitude]]);
-                    saveLocationData(hikeIdRef.current, {latitude, longitude, timestamp,});
+                    saveLocationData(hikeIdRef.current, {
+                        latitude,
+                        longitude,
+                        timestamp,
+                    });
                 } else {
-                    const distance = getDistance(lastCoords, {latitude, longitude,});
+                    const distance = getDistance(lastCoords, {
+                        latitude,
+                        longitude,
+                    });
 
                     if (distance >= 10) {
                         lastCoords = { latitude, longitude };
                         setCoords({ latitude, longitude });
                         const timestamp = new Date().toISOString();
                         setRoute((prev) => [...prev, [latitude, longitude]]);
-                        saveLocationData(hikeIdRef.current, {latitude, longitude, timestamp,});
+                        saveLocationData(hikeIdRef.current, {
+                            latitude,
+                            longitude,
+                            timestamp,
+                        });
                     }
                 }
             },
@@ -128,13 +160,67 @@ function HikeTracker() {
             {hikeSummary && (
                 <div className="hike-summary">
                     <h3 className="summary-heading">Hike Summary</h3>
-                    <p className="summary-text">
-                        <strong>Duration:</strong> {hikeSummary.duration}
-                    </p>
-                    <p className="summary-text">
-                        <strong>Distance:</strong>{" "}
-                        {(hikeSummary.distance / 1000).toFixed(2)} km
-                    </p>
+                    <div className="view-hike-map-container">
+                        {route.length > 0 && (
+                            <MapContainer center={route[0]} zoom={15}>
+                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                                {/* Add a marker at the start and end of the route */}
+                                {route.length > 0 && (
+                                    <>
+                                        {/* Start marker */}
+                                        <Marker
+                                            position={route[0]}
+                                            icon={routeMarker}
+                                        ></Marker>
+
+                                        {/* End marker */}
+                                        {route.length > 1 && (
+                                            <Marker
+                                                position={
+                                                    route[route.length - 1]
+                                                }
+                                                icon={routeMarker}
+                                            ></Marker>
+                                        )}
+                                    </>
+                                )}
+
+                                <Polyline positions={route} color="blue" />
+
+                                {photos.map((photo, i) => (
+                                    <Marker
+                                        key={`photo-${i}`}
+                                        position={[
+                                            photo.latitude,
+                                            photo.longitude,
+                                        ]}
+                                        icon={photoMarker}
+                                    >
+                                        <Popup>
+                                            <img
+                                                className="photo"
+                                                src={photo.imageData}
+                                                alt={`Photo taken at ${photo.timestamp}`}
+                                            />
+                                        </Popup>
+                                    </Marker>
+                                ))}
+                            </MapContainer>
+                        )}
+                    </div>
+
+                    <div className="view-hike-summary">
+                        <p>
+                            <strong>Duration:</strong>{" "}
+                            {hikeSummary.duration || "N/A"}
+                        </p>
+                        <p>
+                            <strong>Distance:</strong>{" "}
+                            {(hikeSummary.distance / 1000).toFixed(2)} km
+                        </p>
+                    </div>
+                    
                     <button onClick={back} className="button summary-button">
                         Finish Hike
                     </button>

@@ -14,7 +14,7 @@ import {
     Popup,
 } from "react-leaflet";
 import L from "leaflet";
-import "../styles/map.css";
+import "../styles/App.css";
 
 const routeMarker = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -73,14 +73,6 @@ function ViewHike() {
                     {route.length > 0 && (
                         <MapContainer center={route[0]} zoom={15}>
                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-                            {/* {route.map(([lat, lng], i) => (
-                                <Marker
-                                    key={i}
-                                    position={[lat, lng]}
-                                    icon={routeMarker}
-                                />
-                            ))} */}
 
                             {/* Add a marker at the start and end of the route */}
                             {route.length > 0 && (

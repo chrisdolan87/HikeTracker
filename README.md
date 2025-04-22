@@ -1,70 +1,145 @@
-# Getting Started with Create React App
+# Hike Tracker 🥾
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Hike Tracker** is a Progressive Web App (PWA) built with React that lets users record their hiking adventures. It uses device hardware features such as **GPS** (via the Geolocation API) and the **camera** (via the Camera API with `react-webcam`) to create an interactive hiking experience.
 
-## Available Scripts
+## 🌟 Features
 
-In the project directory, you can run:
+- ✅ Start and stop hikes
+- 🗺️ Track real-time location on a map
+- 📸 Take photos during hikes (pinned to map)
+- 📊 View hike summary with distance and duration
+- 📂 View and dekete previous hikes
+- 📱 Installable as a PWA
 
-### `npm start`
+## 🚀 Live App
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Access the live app here: [https://hike-tracker-omega.vercel.app](https://hike-tracker-omega.vercel.app)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+To install the PWA:
+- On desktop: Click the "Install App" button in the browser address bar.
+- On mobile: Open the browser menu and select **Add to Home Screen**.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📖 How to Use
 
-### `npm run build`
+Once the app is installed or opened in the browser:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🚶 Start a Hike
+1. From the **Home** screen, tap **New Hike**.
+2. You may need to grant permission for the app to access your location.
+3. The map will load showing your current location.
+4. Tap **Start Hike** to start live location tracking.
+5. Route will be shown on the map as you move.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 📸 Take Photos
+1. Tap the **Take Photo** button at any point during your hike.
+2. You may need to grant permission for the app to access the camera.
+3. The camera display will load.
+4. Tap the center camera button to take a photo.
+5. The photo will be saved and pinned to the map in the location it was taken.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🛑 End the Hike
+1. Tap **Stop Hike** when you're done.
+2. A summary screen will display the total duration and total distance of the hike.
+3. The hike is saved locally for future viewing.
 
-### `npm run eject`
+### 📂 View Previous Hikes
+1. Tap **View Previous Hikes** on the Home screen.
+2. Select any hike from the list to view its details.
+3. The hike details screen will load showing the map with the completed route and photo markers, and the hike summary data.
+4. Click on any photo marker to display the photo.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🗑️ Delete a Hike
+1. Tap **View Previous Hikes** on the Home screen.
+2. Select any hike from the list to view its details.
+3. The hike details screen will load.
+3. Tap the **Delete Hike** button.
+4. Confirm the deletion when prompted to delete the hike.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+⚠️ Deleted hikes cannot be recovered. This action permanently removes the hike data and any associated photos from local storage.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Note:** Data is stored locally using IndexedDB and persists across sessions (even offline).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🧰 Technologies Used
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **React** (Frontend)
+- **Dexie.js** (IndexedDB wrapper for local storage)
+- **Leaflet.js** (Map rendering)
+- **react-webcam** (Camera integration)
+- **Vite** (Development & build tooling)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 📸 Permissions Required
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Location Access** – Used to track the user’s route on a map.
+- **Camera Access** – Used to capture photos during hikes.
 
-### Analyzing the Bundle Size
+These permissions are only requested when required and are never stored beyond the device.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🛠️ Getting Started Locally
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Clone the repository and run the app locally:
 
-### Advanced Configuration
+```bash
+git clone https://github.com/chrisdolan87/HikeTracker.git
+cd HikeTracker
+npm install
+npm run dev
+Then visit [http://localhost:5173](http://localhost:5173) in your browser.
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Note:** This project uses **Vite**. If `npm run dev` doesn’t work, make sure Vite is properly installed.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📂 Folder Structure Overview
 
-### `npm run build` fails to minify
+src/
+│
+├── components/        # React components (MapView, Camera, Summary, etc.)
+├── db/                # Dexie.js setup for IndexedDB
+├── pages/             # Page-level components (Home, Hike, PreviousHikes)
+├── utils/             # Utility functions (distance, time calculation)
+├── App.jsx            # Main app logic
+├── main.jsx           # App entry point
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 🧪 Known Issues
+
+- Some devices block camera access in incognito/private browsing modes.
+- Location tracking depends on GPS accuracy and may be less reliable in areas with poor signal.
+- No current export function for hike data (planned for future).
+
+---
+
+## 🔮 Future Improvements
+
+- Offline map caching for better hiking in remote areas
+- Export hikes to GPX/KML
+- Photo gallery with full-size image previews
+- Enhanced analytics for elevation and pace
+
+---
+
+## 📘 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+## 🙌 Credits
+
+Built by **Chris Dolan**.
+
+Icons and assets from:
+
+- [Leaflet](https://leafletjs.com/)
+- [Font Awesome](https://fontawesome.com/)
+- [Heroicons](https://heroicons.com/)

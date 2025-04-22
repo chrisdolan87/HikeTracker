@@ -9,7 +9,6 @@ db.version(5).stores({
     photos: "++id, hikeId, latitude, longitude, timestamp, imageData",
 });
 
-// CREATE
 export const createNewHike = async () => {
     // Add new hike to db and get the id back to use to track hike locations and photos
     const id = await db.hikes.add({
@@ -20,17 +19,6 @@ export const createNewHike = async () => {
     return id;
 };
 
-// DELETE
-export const deleteHike = async (hikeId) => {
-    // Use db.transaction to ensure either evrything is deleted or it rolls back to prevent partial deletes
-    await db.transaction("rw", db.hikes, db.locations, db.photos, async () => {
-        await db.hikes.delete(hikeId);
-        await db.locations.where("hikeId").equals(hikeId).delete();
-        await db.photos.where("hikeId").equals(hikeId).delete();
-    });
-};
-
-// UPDATE
 export const endHike = async (id) => {
     const locations = await getLocationsForHike(id);
     const hike = await db.hikes.get(id);
@@ -73,7 +61,6 @@ export const getAllHikes = async () => {
     return await db.hikes.toArray();
 };
 
-// READ
 export const getLocationsForHike = async (hikeId) => {
     return await db.locations.where({ hikeId }).toArray();
 };
@@ -88,7 +75,6 @@ export const savePhoto = async ({ hikeId, latitude, longitude, imageData }) => {
     });
 };
 
-//READ
 export const getPhotosForHike = async (hikeId) => {
     return await db.photos.where({ hikeId }).toArray();
 };
